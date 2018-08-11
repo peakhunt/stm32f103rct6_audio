@@ -44,7 +44,7 @@ dac_start_dma(uint8_t from_isr)
 
   _current_buffer = b;
 
-  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t*)b->buffer, AUDIO_BUFFER_SIZE, DAC_ALIGN_12B_L);
+  HAL_DAC_Start_DMA(&hdac, DAC_CHANNEL_1, (uint32_t*)b->buffer, AUDIO_BUFFER_SIZE, DAC_ALIGN_12B_R);
 }
 
 #if 0
