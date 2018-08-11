@@ -69,6 +69,13 @@ HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 void
 adc_read_init(void)
 {
+  if(HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK)
+  {
+    while(1)
+    {
+    }
+  }
+
   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (72000000 / 128000) -1);
 }
 
