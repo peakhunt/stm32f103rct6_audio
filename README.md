@@ -11,7 +11,7 @@ This is a simple audio processor based on stm32f1 as my hobby project.
 ## Current Status
 15th, August, 2018
 
-All right. With oscilloscope at work, I was able to very Input/Output.
+All right. With oscilloscope at work, I was able to verify Input/Output.
 In the picture below, yellow is ADC input and green is DAC output.
 ![Measure](doc/oscilloscope.jpg "oscilloscope")
 
