@@ -39,6 +39,7 @@ Input side is just an
 
 And here is the demo board connected to a ceap stm32f103rct6 board.
 ![Demo Board](doc/prototype.jpg)
+![Demo Board Back](doc/prototype_back.jpg)
 
 And you know what? It sounds not that bad!
 Now is the time to study DSP a bit.
