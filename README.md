@@ -25,7 +25,7 @@ The next phase is to design audio I/O circuit and apply DSP.
 
 It's been a while since last time I worked on this hobby project.
 
-The input/outside schematic is ready and it is basically just a copy of [electrosmash](https://www.electrosmash.com/pedalshield-uno).
+The input/output side schematic is ready and it is basically just a copy of [electrosmash](https://www.electrosmash.com/pedalshield-uno).
 
 And here is the schematic.
 
