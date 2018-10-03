@@ -23,7 +23,7 @@ The next phase is to design audio I/O circuit and apply DSP.
 
 3th, October, 2018.
 
-It's been while since last time I worked on this hobby project.
+It's been a while since last time I worked on this hobby project.
 
 The input/outside schematic is ready and it is basically just a copy of [electrosmash](https://www.electrosmash.com/pedalshield-uno).
 
