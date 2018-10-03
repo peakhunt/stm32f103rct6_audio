@@ -1,0 +1,10 @@
+OK TL972     2
+OK 1M R 
+OK 4.7K R
+OK 100K R
+OK 500K VR
+OK 4.7u C+
+OK 0.1uF(100nF)
+
+6.8nF
+270pF
