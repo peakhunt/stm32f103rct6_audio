@@ -37,7 +37,7 @@ Input side is just an
 ![Output Side](doc/output_side.png)
 1. just output stabilization using TL972 opamp.
 
-And here is the demo board connected to a ceap stm32f103rct6 board.
+And here is the demo board connected to a cheap stm32f103rct6 board.
 ![Demo Board](doc/prototype.jpg)
 ![Demo Board Back](doc/prototype_back.jpg)
 
