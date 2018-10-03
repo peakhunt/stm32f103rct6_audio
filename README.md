@@ -38,7 +38,7 @@ Input side is just an
 1. just output stabilization using TL972 opamp.
 
 And here is the demo board connected to a ceap stm32f103rct6 board.
-![Demo Board](doc/project.jpg)
+![Demo Board](doc/prototype.jpg)
 
 And you know what? It sounds not that bad!
 Now is the time to study DSP a bit.
