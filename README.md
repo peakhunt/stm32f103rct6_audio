@@ -41,5 +41,5 @@ And here is the demo board connected to a cheap stm32f103rct6 board.
 ![Demo Board](doc/prototype.png)
 ![Demo Board Back](doc/prototype_back.jpg)
 
-And you know what? It sounds not that bad!
+And you know what? It doesn't sound that bad!
 Now is the time to study DSP a bit.
