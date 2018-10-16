@@ -9,19 +9,19 @@ This is a simple audio processor based on stm32f1 as my hobby project.
 ![Hardware Block](doc/hw_arch.png "hardware block")
 
 ## Current Status
-15th, August, 2018
+### 15th, August, 2018
 
 All right. With oscilloscope at work, I was able to verify Input/Output.
 In the picture below, yellow is ADC input and green is DAC output.
 ![Measure](doc/oscilloscope.jpg "oscilloscope")
 
-11th, August, 2018.
+### 11th, August, 2018.
 
 Since I don't have an oscilloscope, I couldn't precisely verify all the input/output graphs and their timings.
 But with test meter and potentiometer, I was able to verify that the output voltage matches the input voltage.
 The next phase is to design audio I/O circuit and apply DSP.
 
-3th, October, 2018.
+### 3th, October, 2018.
 
 It's been a while since last time I worked on this hobby project.
 
@@ -43,3 +43,6 @@ And here is the demo board connected to a cheap stm32f103rct6 board.
 
 And you know what? It doesn't sound that bad!
 Now is the time to study DSP a bit.
+
+### 16th, October, 2018.
+Noise is a huge issue!!! In my debugging, it is the guitar/amp interface circuit. Working on it now.
