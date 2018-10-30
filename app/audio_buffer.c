@@ -11,13 +11,14 @@ static struct list_head    _out_list;
 static audio_buffer_t   _audio_buffer[AUDIO_BUFFER_MAX_NUM];
 
 //
-// this gotta be volatiles actually
+// this doesn't have to be volatiles
+// cuz optimization is already disabled by pragma
 //
-static uint32_t _num_free = 0;
-static uint32_t _num_in = 0;
-static uint32_t _num_out = 0;
+static volatile uint32_t _num_free = 0;
+static volatile uint32_t _num_in = 0;
+static volatile uint32_t _num_out = 0;
 
-static uint32_t _num_free_failed = 0;
+static volatile uint32_t _num_free_failed = 0;
 
 //
 // thought about volatile implementation of generic list library for some time.
