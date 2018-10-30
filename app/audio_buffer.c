@@ -10,11 +10,24 @@ static struct list_head    _out_list;
 
 static audio_buffer_t   _audio_buffer[AUDIO_BUFFER_MAX_NUM];
 
+//
+// this gotta be volatiles actually
+//
 static uint32_t _num_free = 0;
 static uint32_t _num_in = 0;
 static uint32_t _num_out = 0;
 
 static uint32_t _num_free_failed = 0;
+
+//
+// thought about volatile implementation of generic list library for some time.
+// but my conclusion is this approach of disabling optimization on wrapper level
+// is much better than a dirty ugly generic list implementation
+// with full of volatiles.
+// In the end, a generic library should be just a library.
+//
+#pragma GCC push_options
+#pragma GCC optimize("O0")
 
 static inline audio_buffer_t*
 __audio_buffer_get(struct list_head* from)
@@ -109,3 +122,5 @@ audio_buffer_put_out(audio_buffer_t* b)
   _num_out++;
   __audio_buffer_put(b, &_out_list);
 }
+
+#pragma GCC pop_options
