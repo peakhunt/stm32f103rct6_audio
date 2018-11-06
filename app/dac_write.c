@@ -13,9 +13,9 @@ static volatile uint16_t _dac_buffer[DAC_BUFFER_LENGTH];
 static uint8_t  _test_cnt = 0;
 static volatile audio_buffer_t*   _current_buffer = NULL;
 
-static uint32_t   _num_dac_cont = 0;
-static uint32_t   _num_dac_cont_miss = 0;
-static uint32_t   _num_dac_irq = 0;
+static volatile uint32_t   _num_dac_cont = 0;
+static volatile uint32_t   _num_dac_cont_miss = 0;
+static volatile uint32_t   _num_dac_irq = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -102,4 +102,12 @@ dac_write_put(audio_buffer_t* b)
   }
 
   NVIC_EnableIRQ(DMA2_Channel3_IRQn);
+}
+
+void
+dac_write_stat(dac_write_stat_t* stat)
+{
+  stat->dac_cont      = _num_dac_cont;
+  stat->dac_cont_miss = _num_dac_cont_miss;
+  stat->dac_irq       = _num_dac_irq;
 }

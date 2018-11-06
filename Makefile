@@ -83,7 +83,12 @@ app/app.c \
 app/adc_read.c \
 app/dac_write.c \
 app/buffer_list.c \
-app/audio_buffer.c
+app/audio_buffer.c \
+app/stm32f1xx_callbacks.c \
+app/event_dispatcher.c \
+app/shell.c \
+app/shell_if_usb.c \
+app/circ_buffer.c
 
 APP_INCLUDES = \
 -Iapp

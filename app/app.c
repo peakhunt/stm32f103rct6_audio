@@ -6,12 +6,25 @@
 #include "adc_read.h"
 #include "dac_write.h"
 
+#include "event_dispatcher.h"
+#include "shell.h"
+
+void
+app_init_f(void)
+{
+  event_dispatcher_init();
+}
+
 void
 app_init(void)
 {
   audio_buffer_init();
   adc_read_init();
   dac_write_init();
+
+  __disable_irq();
+  shell_init();
+  __enable_irq();
 }
 
 void
@@ -72,5 +85,6 @@ app_loop(void)
       app_audio_process(b);
       dac_write_put(b);
     }
+    event_dispatcher_dispatch();
   }
 }

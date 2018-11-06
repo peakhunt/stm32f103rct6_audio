@@ -124,4 +124,13 @@ audio_buffer_put_out(audio_buffer_t* b)
   __audio_buffer_put(b, &_out_list);
 }
 
+void
+audio_buffer_get_stat(audio_buffer_stat_t* stat)
+{
+  stat->num_free        = _num_free;
+  stat->num_in          = _num_in;
+  stat->num_out         = _num_out;
+  stat->num_get_failed  = _num_free_failed;
+}
+
 #pragma GCC pop_options
