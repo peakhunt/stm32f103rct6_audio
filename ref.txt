@@ -1,2 +1,4 @@
 https://www.instructables.com/id/Nucleo-Guitar-Effects-Pedal/
 https://www.electrosmash.com/images/tech/pedalshield-uno/pedalshield-uno-input-output-stages.jpg
+
+https://books.google.co.kr/books?id=di1gDwAAQBAJ&pg=SA4-PA96&lpg=SA4-PA96&dq=arm_cfft_f32+inverse+example&source=bl&ots=hOlPtrHsQo&sig=WgiogChfoMrUdwFAxJEJwyTxq34&hl=en&sa=X&ved=2ahUKEwjnrMn33tHfAhWBy7wKHbgXCkAQ6AEwDHoECAIQAQ#v=onepage&q=arm_cfft_f32%20inverse%20example&f=false
