@@ -120,7 +120,7 @@ BIN = $(CP) -O binary -S
 # CFLAGS
 #######################################
 # cpu
-CPU = -mcpu=cortex-m3 -DARM_MATH_CM3
+CPU = -mcpu=cortex-m3
 
 # fpu
 # NONE for Cortex-M0/M0+/M3
@@ -138,7 +138,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F103xE
+-DSTM32F103xE \
+-DARM_MATH_CM3
 
 
 # AS includes
@@ -178,7 +179,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32F103RCTx_FLASH.ld
 
 # libraries
-LIBS = -LDrivers/CMSIS/Lib/GCC -lc -lm -lnosys -larm_cortexM3l_math
+LIBS = -LDrivers/CMSIS/Lib/GCC -larm_cortexM3l_math -lc -lm -lnosys
 LIBDIR = 
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 

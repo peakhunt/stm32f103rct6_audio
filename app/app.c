@@ -39,11 +39,13 @@ app_start(void)
 static void
 app_startup_accumulate(void)
 {
+#define START_UP_DELAY      24
+
   audio_buffer_t* b;
   int count = 0;
-  audio_buffer_t* startup_buf[4];
+  static audio_buffer_t* startup_buf[START_UP_DELAY];
 
-  while(count < 4)
+  while(count < START_UP_DELAY)
   {
     b = adc_read_in();
     if(b != NULL)
@@ -53,7 +55,7 @@ app_startup_accumulate(void)
     }
   }
 
-  for(count = 0; count < 4; count++)
+  for(count = 0; count < START_UP_DELAY; count++)
   {
     audio_process(startup_buf[count]);
     dac_write_put(startup_buf[count]);
