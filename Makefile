@@ -88,7 +88,8 @@ app/stm32f1xx_callbacks.c \
 app/event_dispatcher.c \
 app/shell.c \
 app/shell_if_usb.c \
-app/circ_buffer.c
+app/circ_buffer.c \
+app/audio.c
 
 APP_INCLUDES = \
 -Iapp
@@ -119,7 +120,7 @@ BIN = $(CP) -O binary -S
 # CFLAGS
 #######################################
 # cpu
-CPU = -mcpu=cortex-m3
+CPU = -mcpu=cortex-m3 -DARM_MATH_CM3
 
 # fpu
 # NONE for Cortex-M0/M0+/M3
@@ -177,7 +178,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32F103RCTx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
+LIBS = -LDrivers/CMSIS/Lib/GCC -lc -lm -lnosys -larm_cortexM3l_math
 LIBDIR = 
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 

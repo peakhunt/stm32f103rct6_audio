@@ -5,6 +5,7 @@
 #include "audio_buffer.h"
 #include "adc_read.h"
 #include "dac_write.h"
+#include "audio.h"
 
 #include "event_dispatcher.h"
 #include "shell.h"
@@ -21,6 +22,7 @@ app_init(void)
   audio_buffer_init();
   adc_read_init();
   dac_write_init();
+  audio_init();
 
   __disable_irq();
   shell_init();
@@ -32,17 +34,6 @@ app_start(void)
 {
   adc_read_start();
   dac_write_start();
-}
-
-static void
-app_audio_process(audio_buffer_t* b)
-{
-  /////////////////////////
-  //
-  // FIXME
-  // DSP Processing
-  //
-  /////////////////////////
 }
 
 static void
@@ -64,7 +55,7 @@ app_startup_accumulate(void)
 
   for(count = 0; count < 4; count++)
   {
-    app_audio_process(startup_buf[count]);
+    audio_process(startup_buf[count]);
     dac_write_put(startup_buf[count]);
   }
 }
@@ -82,7 +73,7 @@ app_loop(void)
 
     if(b != NULL)
     {
-      app_audio_process(b);
+      audio_process(b);
       dac_write_put(b);
     }
     event_dispatcher_dispatch();
