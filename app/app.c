@@ -39,7 +39,7 @@ app_start(void)
 static void
 app_startup_accumulate(void)
 {
-#define START_UP_DELAY      24
+  #define START_UP_DELAY      4
 
   audio_buffer_t* b;
   int count = 0;
