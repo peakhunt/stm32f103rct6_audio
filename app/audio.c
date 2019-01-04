@@ -18,8 +18,6 @@ audio_process(audio_buffer_t* b)
   //////////////////////////////////////////////////
   //
   // XXX
-  // read this
-  // http://www.eas.uccs.edu/~mwickert/ece5655/lecture_notes/ARM/ece5655_chap9.pdf
   //
   // sample size: 128
   // sampling frequency : 128 KHz
