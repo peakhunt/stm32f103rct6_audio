@@ -44,8 +44,11 @@ static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_bufs(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_dacs(ShellIntf* intf, int argc, const char** argv);
+
+#ifdef FFT_TEST
 static void shell_command_fft_test(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_fft_data(ShellIntf* intf, int argc, const char** argv);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -86,6 +89,7 @@ static ShellCommand     _commands[] =
     "show dac stats",
     shell_command_dacs,
   },
+#ifdef FFT_TEST
   {
     "fft_test",
     "show fft test sample",
@@ -96,6 +100,7 @@ static ShellCommand     _commands[] =
     "show fft test data",
     shell_command_fft_data,
   },
+#endif
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -169,6 +174,7 @@ shell_command_dacs(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "irq  : %lu\r\n", stat.dac_irq);
 }
 
+#ifdef FFT_TEST
 static void
 shell_command_fft_test(ShellIntf* intf, int argc, const char** argv)
 {
@@ -195,6 +201,7 @@ shell_command_fft_data(ShellIntf* intf, int argc, const char** argv)
     }
   }
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //

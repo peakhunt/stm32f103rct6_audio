@@ -18,10 +18,12 @@ static void audio_process_bypass(q15_t* mag, int len);
 ////////////////////////////////////////////////////////////////////////////////
 q15_t                               _samples[FFT_LEN*2];
 
+#ifdef FFT_TEST
 float32_t               _test_in[1024];
 float32_t               _test_out[1024];
 float32_t               _samples_f[2048];
 float32_t               _samples_copied[2048];
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -43,6 +45,7 @@ audio_process_bypass(q15_t* mag, int len)
 void
 audio_init(void)
 {
+#ifdef FFT_TEST
   float32_t   s, c;
   float32_t   t;
 
@@ -50,8 +53,8 @@ audio_init(void)
   {
     t = (3.14f * 6.0f/ 1024.0f) * i;
 
-    s = arm_sin_f32(t);
-    c = arm_cos_f32(t);
+    s = arm_sin_f32(2 * t);
+    c = arm_cos_f32(4 * t);
 
     _test_in[i] = 3.0f * s + 1.5f * c;
   }
@@ -81,11 +84,17 @@ audio_init(void)
   {
     _test_out[i] = _samples_copied[i * 2 + 0];
   }
+#endif
 }
 
 void
 audio_process(audio_buffer_t* b)
 {
+  //
+  // XXX
+  // this copy after forward/inverse FFT looks quite a waste of resource.
+  //
+
   //////////////////////////////////////////////////
   //
   // sample size: 128
@@ -108,20 +117,31 @@ audio_process(audio_buffer_t* b)
   }
 
   // forward FFT
+  // input is [real | imaginary] format
+  //
   arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 0, 1);
-
+  //
+  // output is magnitude of [real | imaginary] format
+  //
+  // to calculate magnitude,
+  // for real part, 
+  //                        real[i] / (N/2)
+  //                        real[i] / N for i = 0 and N/2
+  // for imaginary part,    -imaginary[i] / (N/2)
+  //
+  // i = from 0 to N/2 inclusive, that is, N/2 + 1 magnitudes for each part.
+  //
   audio_process_bypass(_samples, FFT_LEN);
 
-#if 0
-  // inverse FFT
-  arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 1, 1);
-
   //
-  // prepare inverse CFFT output
+  // input is magnitude of [real | imaginary]
+  //
+  arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 1, 1);
+  //
+  // output is FFT_LEN time domain signals of [real | imaginary] 
   //
   for(int i = 0; i < FFT_LEN ; i++)
   {
     b->buffer[i] = (uint16_t)_samples[i * 2 + 0];
   }
-#endif
 }
