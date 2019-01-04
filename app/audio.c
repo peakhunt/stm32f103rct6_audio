@@ -33,8 +33,31 @@ float32_t               _samples_copied[2048];
 static void
 audio_process_bypass(q15_t* mag, int len)
 {
-  // a simple bypass DSP kernel
-  // don't do anything
+  //
+  // XXX
+  // this is just a sample to remember
+  // how to handle FFT data
+  //
+
+  q15_t   real, imag;
+  // remember!!!
+  //
+  // to calculate magnitude,
+  // for real part, 
+  //                        real[i] / (N/2)
+  //                        real[i] / N for i = 0 and N/2
+  // for imaginary part,    -imaginary[i] / (N/2)
+  //
+  //
+
+  for(int i = 0; i <= len / 2; i++)
+  {
+    real = mag[i * 1 + 0];       // cos part
+    imag = mag[i * 1 + 1];       // sin part
+
+    (void)real;
+    (void)imag;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,6 +131,8 @@ audio_process(audio_buffer_t* b)
   //////////////////////////////////////////////////
 
   //
+  // XXX : how to get rid of this copy
+  //
   // prepare forward CFFT input
   //
   for(int i = 0; i < FFT_LEN ; i++)
@@ -137,8 +162,11 @@ audio_process(audio_buffer_t* b)
   // input is magnitude of [real | imaginary]
   //
   arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 1, 1);
+
   //
   // output is FFT_LEN time domain signals of [real | imaginary] 
+  //
+  // XXX : how to get rid of this copy
   //
   for(int i = 0; i < FFT_LEN ; i++)
   {
