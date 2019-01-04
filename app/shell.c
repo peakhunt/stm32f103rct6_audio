@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "stm32f1xx_hal.h"
 
@@ -43,6 +44,8 @@ static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_bufs(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_dacs(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_fft_test(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_fft_data(ShellIntf* intf, int argc, const char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -82,7 +85,17 @@ static ShellCommand     _commands[] =
     "dacs",
     "show dac stats",
     shell_command_dacs,
-  }
+  },
+  {
+    "fft_test",
+    "show fft test sample",
+    shell_command_fft_test,
+  },
+  {
+    "fft_data",
+    "show fft test data",
+    shell_command_fft_data,
+  },
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -154,6 +167,33 @@ shell_command_dacs(ShellIntf* intf, int argc, const char** argv)
   shell_printf(intf, "cont : %lu\r\n", stat.dac_cont);
   shell_printf(intf, "miss : %lu\r\n", stat.dac_cont_miss);
   shell_printf(intf, "irq  : %lu\r\n", stat.dac_irq);
+}
+
+static void
+shell_command_fft_test(ShellIntf* intf, int argc, const char** argv)
+{
+  extern float      _samples_f[2048];
+
+  for(int i = 0; i <= 512; i++)
+  {
+    //shell_printf(intf, "%02d: %04x %04x\r\n", i, (uint16_t)_samples[i*2], (uint16_t)_samples[i*2+1]);
+    shell_printf(intf, "%02d: %.4f %4f\r\n", i, _samples_f[i*2], _samples_f[i*2 + 1]);
+  }
+}
+
+static void
+shell_command_fft_data(ShellIntf* intf, int argc, const char** argv)
+{
+  extern float _test_in[1024];
+  extern float _test_out[1024];
+
+  for(int i = 0; i < 1024; i++)
+  {
+    if(fabs(_test_in[i] - _test_out[i]) > 0.0001f)
+    {
+      shell_printf(intf, "%02d: %.4f %.4f\r\n", i, _test_in[i], _test_out[i]);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

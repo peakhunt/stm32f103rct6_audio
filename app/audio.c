@@ -16,10 +16,12 @@ static void audio_process_bypass(q15_t* mag, int len);
 // module privates
 //
 ////////////////////////////////////////////////////////////////////////////////
-static arm_rfft_instance_q15        _fft;
+q15_t                               _samples[FFT_LEN*2];
 
-static q15_t                        _magnitudes[FFT_LEN];
-static q15_t                        _samples[FFT_LEN];
+float32_t               _test_in[1024];
+float32_t               _test_out[1024];
+float32_t               _samples_f[2048];
+float32_t               _samples_copied[2048];
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -41,15 +43,50 @@ audio_process_bypass(q15_t* mag, int len)
 void
 audio_init(void)
 {
-  // nothing to do
+  float32_t   s, c;
+  float32_t   t;
+
+  for(int i = 0; i < 1024; i++)
+  {
+    t = (3.14f * 6.0f/ 1024.0f) * i;
+
+    s = arm_sin_f32(t);
+    c = arm_cos_f32(t);
+
+    _test_in[i] = 3.0f * s + 1.5f * c;
+  }
+
+  for(int i = 0; i < 1024; i++)
+  {
+    _samples_f[i * 2 + 0] = _test_in[i];
+    _samples_f[i * 2 + 1] = 0.0f;
+  }
+
+  // forward
+  arm_cfft_f32(&arm_cfft_sR_f32_len1024, _samples_f, 0, 1);
+
+  //
+  // copy magnitude data to save and later recover
+  //
+  for(int i = 0; i < 2048; i++)
+  {
+    _samples_copied[i] = _samples_f[i];
+  }
+
+
+  // inverse
+  arm_cfft_f32(&arm_cfft_sR_f32_len1024, _samples_copied, 1, 1);
+
+  for(int i = 0; i < 1024; i++)
+  {
+    _test_out[i] = _samples_copied[i * 2 + 0];
+  }
 }
 
 void
 audio_process(audio_buffer_t* b)
 {
   //////////////////////////////////////////////////
-  //
-  // XXX
   //
   // sample size: 128
   // sampling frequency : 128 KHz
@@ -59,26 +96,32 @@ audio_process(audio_buffer_t* b)
   //
   // 64 / 128 = roughly 0.5KHz per each BIN
   //
-  // so mostly indices between 0 and 15 are of primary
-  // interest to me.
-  //
   //////////////////////////////////////////////////
 
+  //
+  // prepare forward CFFT input
+  //
+  for(int i = 0; i < FFT_LEN ; i++)
+  {
+    _samples[i * 2 + 0] = b->buffer[i];
+    _samples[i * 2 + 1] = 0;    // Q15 0
+  }
+
   // forward FFT
-  arm_rfft_init_q15(&_fft, FFT_LEN, 0, 1);
-  arm_rfft_q15(&_fft, (q15_t*)b->buffer, _magnitudes);
+  arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 0, 1);
 
-  audio_process_bypass(_magnitudes, FFT_LEN);
+  audio_process_bypass(_samples, FFT_LEN);
 
+#if 0
   // inverse FFT
-  arm_rfft_init_q15(&_fft, FFT_LEN, 1, 1);
-  arm_rfft_q15(&_fft,  _magnitudes, _samples);
+  arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 1, 1);
 
   //
-  // XXX
-  // convert _samples in q15 to uint16_t dac output
+  // prepare inverse CFFT output
   //
-  // No we don't have to do anything as long as we manipulate _magnitudes
-  // in q15 arithmetic.
-  //
+  for(int i = 0; i < FFT_LEN ; i++)
+  {
+    b->buffer[i] = (uint16_t)_samples[i * 2 + 0];
+  }
+#endif
 }
