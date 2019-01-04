@@ -4,8 +4,10 @@
 
 #define FFT_LEN                     AUDIO_BUFFER_SIZE
 
-static float32_t                    _samples[FFT_LEN * 2];
-static float32_t                    _magnitudes[FFT_LEN];
+static arm_rfft_instance_q15        _fft;
+
+static q15_t                        _magnitudes[FFT_LEN];
+static q15_t                        _samples[FFT_LEN];
 
 void
 audio_init(void)
@@ -34,28 +36,21 @@ audio_process(audio_buffer_t* b)
   //
   //////////////////////////////////////////////////
 
-  for(int i = 0; i < FFT_LEN * 2; i += 2)
-  {
-    _samples[i] = b->buffer[i/2];     // real part
-    _samples[i + 1] = 0;              // imaginary part
-  }
-
-  // time domain to frequency domain
-  arm_cfft_f32(&arm_cfft_sR_f32_len128, _samples, 0, 1);
-  arm_cmplx_mag_f32(_samples, _magnitudes, FFT_LEN);
+  // forward FFT
+  arm_rfft_init_q15(&_fft,  FFT_LEN, 0, 1);
+  arm_rfft_q15(&_fft, (q15_t*)b->buffer, _magnitudes);
 
   //
   // FIXME
   // add DSP processing
   //
 
-  // frequency domain to time domain
-  arm_cmplx_mag_f32(_samples, _magnitudes, FFT_LEN);
-  arm_cfft_f32(&arm_cfft_sR_f32_len128, _samples, 1, 1);
+  // inverse FFT
+  arm_rfft_init_q15(&_fft, FFT_LEN, 1, 1);
+  arm_rfft_q15(&_fft,  _magnitudes, _samples);
 
-  for(int i = 0; i < FFT_LEN * 2; i += 2)
-  {
-    b->buffer[i/2] = (uint16_t)(_samples[i]);
-    // XXX ignore imaginary part
-  }
+  //
+  // FIXME
+  // convert _samples in q15 to uint16_t dac output
+  //
 }
