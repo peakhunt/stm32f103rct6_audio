@@ -11,3 +11,8 @@ https://books.google.co.kr/books?id=di1gDwAAQBAJ&pg=SA4-PA96&lpg=SA4-PA96&dq=arm
 https://lb9mg.no/2018/05/23/practical-fft-on-microcontrollers-using-cmsis-dsp/
 
 http://yehar.com/blog/?p=121&cpage=1
+
+http://diydsp.com/livesite/pages/GuitarPedals
+
+## very nice introduction
+http://yehar.com/blog/?p=121&cpage=1
