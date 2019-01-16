@@ -2,7 +2,9 @@
 #include "arm_math.h"
 #include "arm_const_structs.h"
 
-#define FFT_LEN                     AUDIO_BUFFER_SIZE
+#define FFT_LEN               AUDIO_BUFFER_SIZE
+#define REAL_PART(x)          (x * 2 + 0)
+#define IMAG_PART(x)          (x * 2 + 1)
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -16,14 +18,18 @@ static void audio_process_bypass(q15_t* mag, int len);
 // module privates
 //
 ////////////////////////////////////////////////////////////////////////////////
-q15_t                               _samples[FFT_LEN*2];
+static arm_rfft_instance_q15    _fwd_fft;
+static arm_rfft_instance_q15    _inv_fft;
 
-#ifdef FFT_TEST
-float32_t               _test_in[1024];
-float32_t               _test_out[1024];
-float32_t               _samples_f[2048];
-float32_t               _samples_copied[2048];
-#endif
+static q15_t                    _input_buffer[FFT_LEN];
+
+static q15_t                    _input_offset_neg_0p5 = 0xc000;
+static q15_t                    _input_scale_0p250062 = 0x2002;
+static q15_t                    _output_scale_0p124969 = 0xfff;
+static q15_t                    _output_offset_0p124969_div_2 = 0x80b;
+
+static q15_t                    _magnitudes[FFT_LEN * 2];
+static q15_t                    _output_buffer[FFT_LEN * 2];
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -33,31 +39,7 @@ float32_t               _samples_copied[2048];
 static void
 audio_process_bypass(q15_t* mag, int len)
 {
-  //
-  // XXX
-  // this is just a sample to remember
-  // how to handle FFT data
-  //
-
-  q15_t   real, imag;
-  // remember!!!
-  //
-  // to calculate magnitude,
-  // for real part, 
-  //                        real[i] / (N/2)
-  //                        real[i] / N for i = 0 and N/2
-  // for imaginary part,    -imaginary[i] / (N/2)
-  //
-  //
-
-  for(int i = 0; i <= len / 2; i++)
-  {
-    real = mag[i * 1 + 0];       // cos part
-    imag = mag[i * 1 + 1];       // sin part
-
-    (void)real;
-    (void)imag;
-  }
+  len++;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,108 +50,59 @@ audio_process_bypass(q15_t* mag, int len)
 void
 audio_init(void)
 {
-#ifdef FFT_TEST
-  float32_t   s, c;
-  float32_t   t;
-
-  for(int i = 0; i < 1024; i++)
+  if(arm_rfft_init_q15(&_fwd_fft, FFT_LEN, 0, 1) != ARM_MATH_SUCCESS)
   {
-    t = (3.14f * 6.0f/ 1024.0f) * i;
-
-    s = arm_sin_f32(2 * t);
-    c = arm_cos_f32(4 * t);
-
-    _test_in[i] = 3.0f * s + 1.5f * c;
+    while(1)
+      ;
   }
 
-  for(int i = 0; i < 1024; i++)
+  if(arm_rfft_init_q15(&_inv_fft, FFT_LEN, 1, 1) != ARM_MATH_SUCCESS)
   {
-    _samples_f[i * 2 + 0] = _test_in[i];
-    _samples_f[i * 2 + 1] = 0.0f;
+    while(1)
+      ;
   }
-
-  // forward
-  arm_cfft_f32(&arm_cfft_sR_f32_len1024, _samples_f, 0, 1);
-
-  //
-  // copy magnitude data to save and later recover
-  //
-  for(int i = 0; i < 2048; i++)
-  {
-    _samples_copied[i] = _samples_f[i];
-  }
-
-
-  // inverse
-  arm_cfft_f32(&arm_cfft_sR_f32_len1024, _samples_copied, 1, 1);
-
-  for(int i = 0; i < 1024; i++)
-  {
-    _test_out[i] = _samples_copied[i * 2 + 0];
-  }
-#endif
 }
 
 void
 audio_process(audio_buffer_t* b)
 {
-  //
-  // XXX
-  // this copy after forward/inverse FFT looks quite a waste of resource.
-  //
-
-  //////////////////////////////////////////////////
-  //
-  // sample size: 128
-  // sampling frequency : 128 KHz
-  //
-  // then FFT frequency range
-  // 128KHz/2 * linspace(0,1, 128)
-  //
-  // 64 / 128 = roughly 0.5KHz per each BIN
-  //
-  //////////////////////////////////////////////////
-
-  //
-  // XXX : how to get rid of this copy
-  //
-  // prepare forward CFFT input
-  //
-  for(int i = 0; i < FFT_LEN ; i++)
+#if 0
+  for(int i = 0; i < FFT_LEN; i++)
   {
-    _samples[i * 2 + 0] = b->buffer[i];
-    _samples[i * 2 + 1] = 0;    // Q15 0
+    b->buffer[i] <<= 3;
   }
+#endif
+  //
+  // ADC input is 12 bit in the range of 0 - 4095
+  //
+  // in Q15, 0 is 0 and 4095 is 0.124969
+  //
+  // for maximum accuracy, we wanna scale (0~0.124969) in Q15
+  // to (-1 ~ 1) in Q15
+  //
 
-  // forward FFT
-  // input is [real | imaginary] format
-  //
-  arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 0, 1);
-  //
-  // output is magnitude of [real | imaginary] format
-  //
-  // to calculate magnitude,
-  // for real part, 
-  //                        real[i] / (N/2)
-  //                        real[i] / N for i = 0 and N/2
-  // for imaginary part,    -imaginary[i] / (N/2)
-  //
-  // i = from 0 to N/2 inclusive, that is, N/2 + 1 magnitudes for each part.
-  //
-  audio_process_bypass(_samples, FFT_LEN);
+  // scale 0 ~ 0.124969 to 0 ~ 1
+  // scale = SF * 2^shift
+  // 1/0.124969 = 8.001984492154054
+  //            = 0.250062015379814 * 32
+  //            = 0.250062015379814 * 2^5
+  arm_scale_q15((q15_t*)b->buffer, _input_scale_0p250062, 5, _input_buffer, FFT_LEN);
+  // scale 0 ~ 1 to -0.5 to 0.5
+  arm_offset_q15(_input_buffer, _input_offset_neg_0p5, _input_buffer, FFT_LEN);
+  // scale -0.5 to 0.5 to -1.0 to 1.0
+  arm_shift_q15(_input_buffer, 1, _input_buffer, FFT_LEN);
 
-  //
-  // input is magnitude of [real | imaginary]
-  //
-  arm_cfft_q15(&arm_cfft_sR_q15_len128, _samples, 1, 1);
+  arm_rfft_q15(&_fwd_fft, _input_buffer, _magnitudes);
+  audio_process_bypass(_magnitudes, FFT_LEN);
+  arm_rfft_q15(&_inv_fft, _magnitudes, _output_buffer);
 
-  //
-  // output is FFT_LEN time domain signals of [real | imaginary] 
-  //
-  // XXX : how to get rid of this copy
-  //
-  for(int i = 0; i < FFT_LEN ; i++)
+  // scale -1 ~ 1 to -0.124969/2 ~ 0.124969/2
+  arm_scale_q15(_output_buffer, _output_scale_0p124969, -1, _output_buffer, FFT_LEN);
+  // scale -0.124969/2 ~ 0.124969/2 to 0 ~ 0.124969
+  arm_offset_q15(_output_buffer, _output_offset_0p124969_div_2, _output_buffer, FFT_LEN);
+
+  for(int i = 0; i < FFT_LEN; i++)
   {
-    b->buffer[i] = (uint16_t)_samples[i * 2 + 0];
+    b->buffer[i] = _output_buffer[i];
   }
 }
