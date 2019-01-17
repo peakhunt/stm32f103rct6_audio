@@ -90,7 +90,7 @@ audio_process(audio_buffer_t* b)
   // scale 0 ~ 1 to -0.5 to 0.5
   arm_offset_q15(_input_buffer, _input_offset_neg_0p5, _input_buffer, FFT_LEN);
   // scale -0.5 to 0.5 to -1.0 to 1.0
-  arm_shift_q15(_input_buffer, 1, _input_buffer, FFT_LEN);
+  arm_shift_q15(_input_buffer, 1, _input_buffer, FFT_LEN);    // primary accuracy loss here suspected.
 
   arm_rfft_q15(&_fwd_fft, _input_buffer, _magnitudes);
   //
@@ -103,9 +103,9 @@ audio_process(audio_buffer_t* b)
   arm_rfft_q15(&_inv_fft, _magnitudes, _output_buffer);
   //
   // ifft output is so small, and 1/(fftlen/2) scale mentioned in the doc
-  // makes sense. but too much loss in accuracy? hmmm
+  // makes sense but too much loss in accuracy! not sure if this is expected with q15 FFT
   //
-  arm_shift_q15(_output_buffer, 6, _output_buffer, FFT_LEN);
+  arm_shift_q15(_output_buffer, 6, _output_buffer, FFT_LEN);    // primary accuracy loss here suspected.
 
   // scale -1 ~ 1 to -0.124969/2 ~ 0.124969/2
   arm_scale_q15(_output_buffer, _output_scale_0p124969, -1, _output_buffer, FFT_LEN);
