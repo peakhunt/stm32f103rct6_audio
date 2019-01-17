@@ -44,6 +44,7 @@ static void shell_command_version(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_uptime(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_bufs(ShellIntf* intf, int argc, const char** argv);
 static void shell_command_dacs(ShellIntf* intf, int argc, const char** argv);
+static void shell_command_bypass(ShellIntf* intf, int argc, const char** argv);
 
 #ifdef FFT_TEST
 static void shell_command_fft_test(ShellIntf* intf, int argc, const char** argv);
@@ -101,6 +102,11 @@ static ShellCommand     _commands[] =
     shell_command_fft_data,
   },
 #endif
+  {
+    "bypass",
+    "turn on/off bypass",
+    shell_command_bypass,
+  },
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -202,6 +208,16 @@ shell_command_fft_data(ShellIntf* intf, int argc, const char** argv)
   }
 }
 #endif
+
+static void
+shell_command_bypass(ShellIntf* intf, int argc, const char** argv)
+{
+  extern bool _by_pass;
+
+  _by_pass = !_by_pass;
+
+  shell_printf(intf, "Turning %s bypass\r\n", _by_pass ? "ON" : "OFF");
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //

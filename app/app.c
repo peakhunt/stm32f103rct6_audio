@@ -10,6 +10,8 @@
 #include "event_dispatcher.h"
 #include "shell.h"
 
+bool _by_pass   = false;
+
 void
 app_init_f(void)
 {
@@ -57,7 +59,10 @@ app_startup_accumulate(void)
 
   for(count = 0; count < START_UP_DELAY; count++)
   {
-    audio_process(startup_buf[count]);
+    if(_by_pass == false)
+    {
+      audio_process(startup_buf[count]);
+    }
     dac_write_put(startup_buf[count]);
   }
 }
@@ -75,7 +80,10 @@ app_loop(void)
 
     if(b != NULL)
     {
-      audio_process(b);
+      if(_by_pass == false)
+      {
+        audio_process(b);
+      }
       dac_write_put(b);
     }
     event_dispatcher_dispatch();

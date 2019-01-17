@@ -22,8 +22,8 @@ TARGET = stm32f103rct6_audio
 # debug build?
 DEBUG = 1
 # optimization
-# OPT = -Og
-OPT = -O3
+OPT = -Og
+# OPT = -O3
 
 
 #######################################

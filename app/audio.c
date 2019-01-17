@@ -93,16 +93,22 @@ audio_process(audio_buffer_t* b)
   arm_shift_q15(_input_buffer, 1, _input_buffer, FFT_LEN);
 
   arm_rfft_q15(&_fwd_fft, _input_buffer, _magnitudes);
+  //
+  // XXX what a confusing doc!
+  // 1/(fftlen/2) scale doesn't apply here! why???
+  //arm_shift_q15(_magnitudes, 6, _magnitudes, FFT_LEN * 2);
+
   audio_process_bypass(_magnitudes, FFT_LEN);
+
   arm_rfft_q15(&_inv_fft, _magnitudes, _output_buffer);
+  //
+  // ifft output is so small, and 1/(fftlen/2) scale mentioned in the doc
+  // makes sense. but too much loss in accuracy? hmmm
+  //
+  arm_shift_q15(_output_buffer, 6, _output_buffer, FFT_LEN);
 
   // scale -1 ~ 1 to -0.124969/2 ~ 0.124969/2
   arm_scale_q15(_output_buffer, _output_scale_0p124969, -1, _output_buffer, FFT_LEN);
   // scale -0.124969/2 ~ 0.124969/2 to 0 ~ 0.124969
-  arm_offset_q15(_output_buffer, _output_offset_0p124969_div_2, _output_buffer, FFT_LEN);
-
-  for(int i = 0; i < FFT_LEN; i++)
-  {
-    b->buffer[i] = _output_buffer[i];
-  }
+  arm_offset_q15(_output_buffer, _output_offset_0p124969_div_2, (q15_t*)b->buffer, FFT_LEN);
 }
