@@ -223,18 +223,7 @@ Wire Wire Line
 	5900 1250 5550 1250
 Wire Wire Line
 	5550 850  5900 850 
-Wire Wire Line
-	5550 850  5550 1000
-Wire Wire Line
-	5550 1250 5150 1250
 Connection ~ 5550 1250
-Wire Wire Line
-	5000 1100 5000 1000
-Wire Wire Line
-	5000 1000 5550 1000
-Connection ~ 5550 1000
-Wire Wire Line
-	5550 1000 5550 1250
 $Comp
 L Device:R R6
 U 1 1 5C1100C8
@@ -246,8 +235,6 @@ F 3 "~" H 4350 1250 50  0001 C CNN
 	1    4350 1250
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	4850 1250 4500 1250
 $Comp
 L Device:CP C3
 U 1 1 5C110AEE
@@ -590,4 +577,17 @@ Wire Wire Line
 	4250 5700 4150 5700
 Wire Wire Line
 	4850 5600 5200 5600
+Wire Wire Line
+	5550 850  5550 1250
+Wire Wire Line
+	5550 1250 5150 1250
+Wire Wire Line
+	4500 1250 4650 1250
+Wire Wire Line
+	4650 1250 4650 1000
+Wire Wire Line
+	4650 1000 5000 1000
+Wire Wire Line
+	5000 1000 5000 1100
+NoConn ~ 4850 1250
 $EndSCHEMATC
