@@ -23,7 +23,7 @@ F 1 "Opamp_Dual_Generic" H 4550 5324 50  0000 C CNN
 F 2 "Housings_DIP:DIP-8_W7.62mm" H 4550 5600 50  0001 C CNN
 F 3 "~" H 4550 5600 50  0001 C CNN
 	2    4550 5600
-	1    0    0    1   
+	1    0    0    -1  
 $EndComp
 $Comp
 L Device:Opamp_Dual_Generic U1
@@ -223,18 +223,7 @@ Wire Wire Line
 	5900 1250 5550 1250
 Wire Wire Line
 	5550 850  5900 850 
-Wire Wire Line
-	5550 850  5550 1000
-Wire Wire Line
-	5550 1250 5150 1250
 Connection ~ 5550 1250
-Wire Wire Line
-	5000 1100 5000 1000
-Wire Wire Line
-	5000 1000 5550 1000
-Connection ~ 5550 1000
-Wire Wire Line
-	5550 1000 5550 1250
 $Comp
 L Device:R R6
 U 1 1 5C1100C8
@@ -590,4 +579,15 @@ Wire Wire Line
 	4250 5700 4150 5700
 Wire Wire Line
 	4850 5600 5200 5600
+Wire Wire Line
+	5550 850  5550 1250
+Wire Wire Line
+	5550 1250 5350 1250
+Wire Wire Line
+	5350 1250 5350 1000
+Wire Wire Line
+	5350 1000 5000 1000
+Wire Wire Line
+	5000 1000 5000 1100
+NoConn ~ 5150 1250
 $EndSCHEMATC
