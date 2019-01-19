@@ -9,7 +9,7 @@ while working on this hobby project, I learned a couple of things.
 1. Floating point FFT/iFFT is way too slow for real-time application. This was rather expected since Cortex-M3 comes with no FPU.
 2. I am seeing horrible accuracy loss with Q15 fixed point based FFT/iFFT. My calculation shows that I am getting roughly 7% accuracy loss.
 
-So I call it a quit at this point and move on to a new project based on STM32F407VET6 board. [See here](https://github.com/peakhunt/stm32f407vet6_audio)
+So I call it quits at this point and move on to a new project based on STM32F407VET6 board. [See here](https://github.com/peakhunt/stm32f407vet6_audio)
 
 ## Current Architecture
 ![Architecture](doc/audio_flow.png "Audio Flow")
